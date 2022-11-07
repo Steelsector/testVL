@@ -19,7 +19,6 @@ class EventTest extends KernelTestCase
      */
     private $entityManager;
     private $databaseTool;
-
     protected function setUp(): void
     {
         $kernel = self::bootKernel();
@@ -30,7 +29,7 @@ class EventTest extends KernelTestCase
             ->get('doctrine')
             ->getManager();
 
-        $this->databaseTool = $kernel->getContainer()->get(DatabaseToolCollection::class);
+        $this->databaseTool = static::getContainer()->get(DatabaseToolCollection::class)->get();
 
         $this->databaseTool->loadFixtures([
             AppFixtures::class
@@ -53,7 +52,7 @@ class EventTest extends KernelTestCase
         //Set up
         $event = new Event();
 
-        $date = date('D, d M Y H:i:s');
+        $date = new \DateTimeImmutable();
 
         $event->setDetails("Log details");
         $event->setTimestamp($date);
@@ -68,9 +67,10 @@ class EventTest extends KernelTestCase
         $this->entityManager->flush();
 
         $eventRepository = $this->entityManager->getRepository(Event::class);
-        //$eventRecord = $eventRepository->findOneBy(['']);
+        $eventRecord = $eventRepository->findOneBy(['details'=> 'Log details']);
 
         // Make assertions
-        $this->assertEquals('info', $typeRecord->getName());
+        $this->assertEquals('Log details', $eventRecord->getDetails());
+        $this->assertEquals($typeRecord, $eventRecord->getType());
     }
 }
