@@ -21,22 +21,19 @@ class TypeRepository extends ServiceEntityRepository
         parent::__construct($registry, Type::class);
     }
 
-    public function save(Type $entity, bool $flush = false): void
+    public function save(Type $entity): Type
     {
         $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+        $this->getEntityManager()->flush();
+        return $entity;
     }
 
-    public function remove(Type $entity, bool $flush = false): void
+    public function remove(Type $entity): bool
     {
         $this->getEntityManager()->remove($entity);
+        $this->getEntityManager()->flush();
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
+        return true;
     }
 
 //    /**
